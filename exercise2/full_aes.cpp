@@ -1,12 +1,3 @@
-
-
-/*************************************************************************   
-            > File Name: AES.cpp  
-            > Author: SongLee   
-            > E-mail: lisong.shine@qq.com   
-            > Created Time: 2014 Friday, December 12, 20:15, 50 seconds 
-            > Personal Blog: http://songlee24.github.com   
-         ************************************************************************/
 #include <iostream>
 #include <bitset>
 #include <string>
@@ -65,8 +56,8 @@ word Rcon[10] = {0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
 
 /******************************Here is the encrypted transformation function ****************************************************/
 /** 
-         *  S Box Conversion - The first four bits are line numbers and the last four bits are column numbers 
-         */
+ *  S Box Conversion - The first four bits are line numbers and the last four bits are column numbers 
+ */
 void SubBytes(byte mtx[4 * 4])
 {
     for (int i = 0; i < 16; ++i)
@@ -78,8 +69,8 @@ void SubBytes(byte mtx[4 * 4])
 }
 
 /** 
-         *  Line Transform - Byte Cyclic Shift 
-         */
+ *  Line Transform - Byte Cyclic Shift 
+ */
 void ShiftRows(byte mtx[4 * 4])
 {
     //The second line circle moves one bit to the left
@@ -102,8 +93,8 @@ void ShiftRows(byte mtx[4 * 4])
 }
 
 /** 
-         *  Multiplication over Finite Fields GF(2^8) 
-         */
+ *  Multiplication over Finite Fields GF(2^8) 
+ */
 byte GFMul(byte a, byte b)
 {
     byte p = 0;
@@ -126,8 +117,8 @@ byte GFMul(byte a, byte b)
 }
 
 /** 
-         *  Column transformation 
-         */
+ *  Column transformation 
+ */
 void MixColumns(byte mtx[4 * 4])
 {
     byte arr[4];
@@ -144,8 +135,8 @@ void MixColumns(byte mtx[4 * 4])
 }
 
 /** 
-         *  Round Key Plus Transform - XOR each column with the extended key 
-         */
+ *  Round Key Plus Transform - XOR each column with the extended key 
+ */
 void AddRoundKey(byte mtx[4 * 4], word k[4])
 {
     for (int i = 0; i < 4; ++i)
@@ -164,8 +155,8 @@ void AddRoundKey(byte mtx[4 * 4], word k[4])
 
 /**************************Here is the decrypted inverse transform function *******************************************************/
 /** 
-         *  Inverse S-box transformation 
-         */
+ *  Inverse S-box transformation 
+ */
 void InvSubBytes(byte mtx[4 * 4])
 {
     for (int i = 0; i < 16; ++i)
@@ -177,8 +168,8 @@ void InvSubBytes(byte mtx[4 * 4])
 }
 
 /** 
-         *  Reverse Transform - Cyclic Right Shift in Bytes 
-         */
+ *  Reverse Transform - Cyclic Right Shift in Bytes 
+ */
 void InvShiftRows(byte mtx[4 * 4])
 {
     //The second line circle moves one bit to the right
@@ -217,8 +208,8 @@ void InvMixColumns(byte mtx[4 * 4])
 
 /******************************Following is the key extension section ***************************************************************/
 /** 
-         * Convert four byte s to one word. 
-         */
+ * Convert four byte s to one word. 
+ */
 word Word(byte &k1, byte &k2, byte &k3, byte &k4)
 {
     word result(0x00000000);
@@ -238,9 +229,9 @@ word Word(byte &k1, byte &k2, byte &k3, byte &k4)
 }
 
 /** 
-         *  Cyclic left shift by byte 
-         *  That is to say, [a0, a1, a2, a3] becomes [a1, a2, a3, a0] 
-         */
+ *  Cyclic left shift by byte 
+ *  That is to say, [a0, a1, a2, a3] becomes [a1, a2, a3, a0] 
+ */
 word RotWord(word &rw)
 {
     word high = rw << 8;
@@ -249,8 +240,8 @@ word RotWord(word &rw)
 }
 
 /** 
-         *  S-box transformation for each byte in input word 
-         */
+ *  S-box transformation for each byte in input word 
+ */
 word SubWord(word &sw)
 {
     word temp;
@@ -266,36 +257,46 @@ word SubWord(word &sw)
 }
 
 /** 
-         *  Key Extension Function - Extended 128-bit key to w[4*(Nr+1)] 
-         */
+ *  Key Extension Function - Extended 128-bit key to w[4*(Nr+1)] 
+ */
 void KeyExpansion(byte key[4 * Nk], word w[4 * (Nr + 1)])
 {
     word temp;
     int i = 0;
+    byte b = 0x00;
+
+    for (size_t i = 0; i < 8; i++)
+    {
+        w[i] = Word(b, b, b, b);
+    }
+
     //The first four of w [] are input key s
-    while (i < Nk)
-    {
-        w[i] = Word(key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]);
-        ++i;
-    }
+    // while (i < Nk)
+    // {
+    //     w[i] = Word(key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]);
+    //     ++i;
+    // }
 
-    i = Nk;
+    // i = Nk;
 
-    while (i < 4 * (Nr + 1))
-    {
-        temp = w[i - 1]; //Record the previous word
-        if (i % Nk == 0)
-            w[i] = w[i - Nk] ^ SubWord(RotWord(temp)) ^ Rcon[i / Nk - 1];
-        else
-            w[i] = w[i - Nk] ^ temp;
-        ++i;
-    }
+    // while (i < 4 * (Nr + 1))
+    // {
+    //     temp = w[i - 1]; //Record the previous word
+    //     if (i % Nk == 0)
+    //     {
+    //         word rw = RotWord(temp);
+    //         w[i] = w[i - Nk] ^ SubWord(rw) ^ Rcon[i / Nk - 1];
+    //     }
+    //     else
+    //         w[i] = w[i - Nk] ^ temp;
+    //     ++i;
+    // }
 }
 
 /******************************Here are the encryption and decryption functions ********************************************************************/
 /** 
-         *  encryption 
-         */
+ *  encryption 
+ */
 void encrypt(byte in[4 * 4], word w[4 * (Nr + 1)])
 {
     word key[4];
@@ -303,26 +304,26 @@ void encrypt(byte in[4 * 4], word w[4 * (Nr + 1)])
         key[i] = w[i];
     AddRoundKey(in, key);
 
-    for (int round = 1; round < Nr; ++round)
+    for (int round = 1; round < 2; ++round)
     {
         SubBytes(in);
         ShiftRows(in);
         MixColumns(in);
         for (int i = 0; i < 4; ++i)
-            key[i] = w[4 * round + i];
+            key[i] = w[i];
         AddRoundKey(in, key);
     }
 
-    SubBytes(in);
-    ShiftRows(in);
-    for (int i = 0; i < 4; ++i)
-        key[i] = w[4 * Nr + i];
-    AddRoundKey(in, key);
+    // SubBytes(in);
+    // ShiftRows(in);
+    // for (int i = 0; i < 4; ++i)
+    //     key[i] = w[4 * Nr + i];
+    // AddRoundKey(in, key);
 }
 
 /** 
-         *  Decrypt 
-         */
+ *  Decrypt 
+ */
 void decrypt(byte in[4 * 4], word w[4 * (Nr + 1)])
 {
     word key[4];
@@ -354,49 +355,22 @@ void decrypt(byte in[4 * 4], word w[4 * (Nr + 1)])
 /**********************************************************************/
 int main()
 {
-    byte key[16] = {0x2b, 0x7e, 0x15, 0x16,
-                    0x28, 0xae, 0xd2, 0xa6,
-                    0xab, 0xf7, 0x15, 0x88,
-                    0x09, 0xcf, 0x4f, 0x3c};
+    byte key[16] = {0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00};
 
-    byte plain[16] = {0x32, 0x88, 0x31, 0xe0,
-                      0x43, 0x5a, 0x31, 0x37,
-                      0xf6, 0x30, 0x98, 0x07,
-                      0xa8, 0x8d, 0xa2, 0x34};
-    //Output key
-    cout << "The key is:";
-    for (int i = 0; i < 16; ++i)
-        cout << hex << key[i].to_ulong() << " ";
-    cout << endl;
+    byte plain[16] = {0x00, 0x00, 0x00, 0x00,
+                      0x00, 0x00, 0x00, 0x00,
+                      0x00, 0x00, 0x00, 0x00,
+                      0x00, 0x00, 0x00, 0x00};
 
     word w[4 * (Nr + 1)];
     KeyExpansion(key, w);
 
-    //Output plaintext to be encrypted
-    cout << endl
-         << "Plaintext to be encrypted:" << endl;
-    for (int i = 0; i < 16; ++i)
-    {
-        cout << hex << plain[i].to_ulong() << " ";
-        if ((i + 1) % 4 == 0)
-            cout << endl;
-    }
-    cout << endl;
-
     //Encryption, output ciphertext
     encrypt(plain, w);
-    cout << "Encrypted ciphertext:" << endl;
-    for (int i = 0; i < 16; ++i)
-    {
-        cout << hex << plain[i].to_ulong() << " ";
-        if ((i + 1) % 4 == 0)
-            cout << endl;
-    }
-    cout << endl;
-
-    //Decrypt, output plaintext
-    decrypt(plain, w);
-    cout << "Decrypted plaintext:" << endl;
+    cout << "First round:" << endl;
     for (int i = 0; i < 16; ++i)
     {
         cout << hex << plain[i].to_ulong() << " ";
