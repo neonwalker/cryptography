@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 #include <bitset>
 using namespace std;
@@ -32,8 +30,8 @@ word Rcon[10] = {0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
                  0x20000000, 0x40000000, 0x80000000, 0x1b000000, 0x36000000};
 
 /** 
-         * Convert four byte s to one word. 
-         */
+ * Convert four byte s to one word. 
+ */
 word Word(byte &k1, byte &k2, byte &k3, byte &k4)
 {
     word result(0x00000000);
@@ -53,9 +51,9 @@ word Word(byte &k1, byte &k2, byte &k3, byte &k4)
 }
 
 /** 
-         *  Cyclic left shift by byte 
-         *  That is to say, [a0, a1, a2, a3] becomes [a1, a2, a3, a0] 
-         */
+ *  Cyclic left shift by byte 
+ *  That is to say, [a0, a1, a2, a3] becomes [a1, a2, a3, a0] 
+ */
 word RotWord(word &rw)
 {
     word high = rw << 8;
@@ -64,8 +62,8 @@ word RotWord(word &rw)
 }
 
 /** 
-         *  S-box transformation for each byte in input word 
-         */
+ *  S-box transformation for each byte in input word 
+ */
 word SubWord(word &sw)
 {
     word temp;
@@ -81,8 +79,8 @@ word SubWord(word &sw)
 }
 
 /** 
-         *  Key Extension Function - Extended 128-bit key to w[4*(Nr+1)] 
-         */
+ *  Key Extension Function - Extended 128-bit key to w[4*(Nr+1)] 
+ */
 void KeyExpansion(byte key[4 * Nk], word w[4 * (Nr + 1)])
 {
     word temp;
@@ -100,7 +98,10 @@ void KeyExpansion(byte key[4 * Nk], word w[4 * (Nr + 1)])
     {
         temp = w[i - 1]; //Record the previous word
         if (i % Nk == 0)
-            w[i] = w[i - Nk] ^ SubWord(RotWord(temp)) ^ Rcon[i / Nk - 1];
+        {
+            word rw = RotWord(temp);
+            w[i] = w[i - Nk] ^ SubWord(rw) ^ Rcon[i / Nk - 1];
+        }
         else
             w[i] = w[i - Nk] ^ temp;
         ++i;
@@ -109,10 +110,10 @@ void KeyExpansion(byte key[4 * Nk], word w[4 * (Nr + 1)])
 
 int main()
 {
-    byte key[16] = {0x2b, 0x7e, 0x15, 0x16,
-                    0x28, 0xae, 0xd2, 0xa6,
-                    0xab, 0xf7, 0x15, 0x88,
-                    0x09, 0xcf, 0x4f, 0x3c};
+    byte key[16] = {0xff, 0xff, 0xff, 0xff,
+                    0xff, 0xff, 0xff, 0xff,
+                    0xff, 0xff, 0xff, 0xff,
+                    0xff, 0xff, 0xff, 0xff};
 
     word w[4 * (Nr + 1)];
 
